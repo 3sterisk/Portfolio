@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "ng build --base-href /angular-portfolio/ && npx angular-cli-ghpages --dir=dist/angular-portfolio"
   },
   "prettier": {
     "overrides": [
@@ -46,4 +47,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.2"
   }
+  
 }
