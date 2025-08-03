@@ -1750,9 +1750,10 @@ html {
 }
 
 /* Form validation */
-.form-control:invalid {
+.form-control.is-invalid {
   border-color: var(--color-error);
 }
+
 
 .form-control:valid {
   border-color: var(--color-success);

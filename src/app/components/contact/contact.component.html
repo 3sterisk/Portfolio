@@ -1,13 +1,13 @@
 <section class="contact" id="contact">
   <div class="container">
     <h2 class="section-title">Get In Touch</h2>
-    
+
     <div class="contact-content pre-fade-in" appScrollAnimate>
       <div class="contact-info">
         <h3>Let's work together!</h3>
         <p>{{ personalInfo?.about }}</p>
         <p>I'm always interested in new opportunities and exciting projects. Feel free to reach out!</p>
-        
+
         <div class="contact-details">
           <div class="contact-item">
             <i class="fas fa-envelope"></i>
@@ -16,18 +16,18 @@
               <i class="fas fa-copy"></i>
             </button>
           </div>
-          
+
           <div class="contact-item" *ngIf="personalInfo?.phone">
             <i class="fas fa-phone"></i>
             <span>{{ personalInfo?.phone }}</span>
           </div>
-          
+
           <div class="contact-item" *ngIf="personalInfo?.location">
             <i class="fas fa-map-marker-alt"></i>
             <span>{{ personalInfo?.location }}</span>
           </div>
         </div>
-        
+
         <div class="contact-social">
           <a [href]="personalInfo?.linkedin" class="social-link" target="_blank" *ngIf="personalInfo?.linkedin">
             <i class="fab fa-linkedin-in"></i>
@@ -40,60 +40,37 @@
           </a>
         </div>
       </div>
-      
+
       <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()" id="contact-form">
         <div class="form-group">
           <label class="form-label" for="name">Name *</label>
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            class="form-control" 
-            formControlName="name"
-            [class.is-invalid]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched"
+          <input type="text" id="name" name="name" class="form-control" formControlName="name"
+            [class.is-invalid]="contactForm.get('name')?.invalid && (contactForm.get('name')?.dirty || contactForm.get('name')?.touched)"
             required>
         </div>
-        
+
         <div class="form-group">
           <label class="form-label" for="email">Email *</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            class="form-control" 
-            formControlName="email"
-            [class.is-invalid]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched"
+          <input type="email" id="email" name="email" class="form-control" formControlName="email"
+            [class.is-invalid]="contactForm.get('email')?.invalid && (contactForm.get('email')?.dirty || contactForm.get('email')?.touched)"
             required>
         </div>
-        
+
         <div class="form-group">
           <label class="form-label" for="subject">Subject *</label>
-          <input 
-            type="text" 
-            id="subject" 
-            name="subject" 
-            class="form-control" 
-            formControlName="subject"
-            [class.is-invalid]="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched"
+          <input type="text" id="subject" name="subject" class="form-control" formControlName="subject"
+            [class.is-invalid]="contactForm.get('subject')?.invalid && (contactForm.get('subject')?.dirty || contactForm.get('subject')?.touched)"
             required>
         </div>
-        
+
         <div class="form-group">
           <label class="form-label" for="message">Message *</label>
-          <textarea 
-            id="message" 
-            name="message" 
-            class="form-control" 
-            rows="5" 
-            formControlName="message"
-            [class.is-invalid]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched"
+          <textarea id="message" name="message" class="form-control" rows="5" formControlName="message"
+            [class.is-invalid]="contactForm.get('message')?.invalid && (contactForm.get('message')?.dirty || contactForm.get('message')?.touched)"
             required></textarea>
         </div>
-        
-        <button 
-          type="submit" 
-          class="btn btn--primary btn--full-width"
-          [disabled]="contactForm.invalid || isSubmitting">
+
+        <button type="submit" class="btn btn--primary btn--full-width" [disabled]="contactForm.invalid || isSubmitting">
           <span *ngIf="!isSubmitting">
             <i class="fas fa-paper-plane"></i>
             Send Message
@@ -104,6 +81,12 @@
           </span>
         </button>
       </form>
+      <div *ngIf="contactForm.invalid">
+        <p *ngIf="contactForm.get('name')?.invalid">❌ Name is invalid</p>
+        <p *ngIf="contactForm.get('email')?.invalid">❌ Email is invalid</p>
+        <p *ngIf="contactForm.get('subject')?.invalid">❌ Subject is invalid</p>
+        <p *ngIf="contactForm.get('message')?.invalid">❌ Message is invalid</p>
+      </div>
     </div>
   </div>
 </section>
