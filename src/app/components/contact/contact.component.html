@@ -81,12 +81,6 @@
           </span>
         </button>
       </form>
-      <div *ngIf="contactForm.invalid">
-        <p *ngIf="contactForm.get('name')?.invalid">❌ Name is invalid</p>
-        <p *ngIf="contactForm.get('email')?.invalid">❌ Email is invalid</p>
-        <p *ngIf="contactForm.get('subject')?.invalid">❌ Subject is invalid</p>
-        <p *ngIf="contactForm.get('message')?.invalid">❌ Message is invalid</p>
-      </div>
     </div>
   </div>
 </section>

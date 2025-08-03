@@ -20,7 +20,7 @@ export class HeroComponent implements OnInit {
   }
 
   downloadResume() {
-    const resumeUrl = '/assets/resume/Kshitij_Singh_Resume.pdf';
+    const resumeUrl = '/Portfolio/assets/resume/Kshitij_Singh_Resume.pdf';
     const resumeFileName = 'Kshitij_Singh_Resume.pdf';
     const link = document.createElement('a');
     link.href = resumeUrl;
