@@ -1,0 +1,42 @@
+<section class="education" id="education">
+  <div class="container">
+    <h2 class="section-title">Education & Certifications</h2>
+    
+    <div class="education-content">
+      <div class="education-item pre-fade-in" *ngFor="let edu of education" appScrollAnimate>
+        <h3 class="education-degree">{{ edu.degree }}</h3>
+        <div class="education-school">{{ edu.school }}</div>
+        <div class="education-meta">
+          <span><i class="fas fa-calendar"></i> {{ edu.duration }}</span>
+          <span *ngIf="edu.gpa"><i class="fas fa-star"></i> GPA: {{ edu.gpa }}</span>
+        </div>
+        
+        <div *ngIf="edu.relevant_coursework" class="coursework">
+          <h4>Relevant Coursework:</h4>
+          <div class="course-tags">
+            <span class="course-tag" *ngFor="let course of edu.relevant_coursework">
+              {{ course }}
+            </span>
+          </div>
+        </div>
+        
+        <div *ngIf="edu.certifications" class="certifications">
+          <h4 class="certifications-title">Certifications</h4>
+          <div class="cert-list">
+            <div class="cert-item" *ngFor="let cert of edu.certifications">
+              <i class="fas fa-certificate"></i>
+              <span>{{ cert }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="edu.achievements" class="achievements">
+          <h4>Achievements:</h4>
+          <ul>
+            <li *ngFor="let achievement of edu.achievements">{{ achievement }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

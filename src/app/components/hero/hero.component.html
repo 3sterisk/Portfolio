@@ -1,0 +1,43 @@
+<section class="hero" id="home">
+  <div class="hero-container">
+    <div class="hero-content pre-fade-in" appScrollAnimate>
+      <div class="hero-text">
+        <span class="hero-greeting">Hi there! I'm</span>
+        <h1 class="hero-name">{{ personalInfo?.name }}</h1>
+        <h2 class="hero-subtitle">{{ personalInfo?.title }}</h2>
+        <p class="hero-tagline">{{ personalInfo?.tagline }}</p>
+        
+        <div class="hero-buttons">
+          <button class="btn btn--primary btn--lg" (click)="scrollToContact()">
+            <i class="fas fa-envelope"></i>
+            Get In Touch
+          </button>
+          <button class="btn btn--secondary btn--lg" (click)="downloadResume()">
+            <i class="fas fa-download"></i>
+            Download Resume
+          </button>
+        </div>
+        
+        <div class="hero-social">
+          <a [href]="personalInfo?.linkedin" class="social-link" target="_blank">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a [href]="personalInfo?.github" class="social-link" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+          <a [href]="'mailto:' + personalInfo?.email" class="social-link">
+            <i class="fas fa-envelope"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="hero-image">
+        <div class="avatar">
+          <div class="avatar-placeholder">
+            {{ personalInfo?.name?.charAt(0) }}{{ personalInfo?.name?.split(' ')[1]?.charAt(0) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,58 @@
+<!-- <section class="about" id="about">
+  <div class="container" >
+    <h2 class="section-title">About Me</h2>
+    
+    <div class="about-content pre-fade-in" appScrollAnimate>
+      <p class="about-text">{{ personalInfo?.about }}</p>
+      
+      <div class="about-stats">
+        <div class="stat-item">
+          <div class="stat-number">3+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">15+</div>
+          <div class="stat-label">Projects Completed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Technologies Used</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Client Satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section class="about" id="about">
+  <div class="container">
+    <h2 class="section-title">About Me</h2>
+    
+    <div class="about-content pre-fade-in" appScrollAnimate>
+      <p class="about-text">{{ personalInfo?.about }}</p>
+      
+      <div class="about-stats">
+        <div class="stat-item">
+          <div class="stat-number">{{ getProfessionalExperience() }}</div>
+          <div class="stat-label">Years Professional Experience</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getCompaniesCount() }}</div>
+          <div class="stat-label">Companies Worked At</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getTechnologiesCount() }}</div>
+          <div class="stat-label">Technologies Mastered</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getProjectsCount() }}</div>
+          <div class="stat-label">Projects Built</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

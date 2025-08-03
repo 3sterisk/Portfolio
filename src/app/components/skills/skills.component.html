@@ -1,0 +1,16 @@
+<section class="skills" id="skills">
+  <div class="container">
+    <h2 class="section-title">Skills & Technologies</h2>
+    
+    <div class="skills-categories pre-fade-in" appScrollAnimate>
+      <div class="skill-category" *ngFor="let category of getSkillCategories()">
+        <h3 class="category-title">{{ category | titlecase }}</h3>
+        <div class="skill-tags">
+          <span class="skill-tag" *ngFor="let skill of skills[category]">
+            {{ skill }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+<section class="projects" id="projects">
+  <div class="container">
+    <h2 class="section-title">Featured Projects</h2>
+    
+    <div class="projects-grid">
+      <div class="project-card pre-fade-in" *ngFor="let project of projects" appScrollAnimate>
+        <div class="project-image">
+          <div class="project-placeholder">
+            <i class="fas fa-code"></i>
+          </div>
+        </div>
+        
+        <div class="project-content">
+          <h3 class="project-title">{{ project.name }}</h3>
+          <p class="project-description">{{ project.description }}</p>
+          
+          <div class="project-tech">
+            <span class="tech-tag" *ngFor="let tech of project.technologies">
+              {{ tech }}
+            </span>
+          </div>
+          
+          <div class="project-features" *ngIf="project.features">
+            <h4>Key Features:</h4>
+            <ul>
+              <li *ngFor="let feature of project.features">{{ feature }}</li>
+            </ul>
+          </div>
+          
+          <div class="project-links">
+            <a class="project-link" (click)="openLink(project.github)" *ngIf="project.github">
+              <i class="fab fa-github"></i>
+              <span>Code</span>
+            </a>
+            <a class="project-link" (click)="openLink(project.live_demo)" *ngIf="project.live_demo">
+              <i class="fas fa-external-link-alt"></i>
+              <span>Live Demo</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
