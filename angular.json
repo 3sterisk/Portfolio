@@ -129,7 +129,7 @@
                 "output": "assets/resume"
               },
               "src/assets",
-              "src/favicon.ico",
+              "src/favicon.ico"
             ],
             "styles": [
               "src/styles.css"
