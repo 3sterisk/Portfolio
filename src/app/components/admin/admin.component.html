@@ -1,4 +1,4 @@
-<div class="admin-panel" *ngIf="!(authService.isAdmin() | async); else adminDashboard">
+<div class="admin-panel" *ngIf="!isAdminUser; else adminDashboard">
   <div class="login-form">
     <h2>Admin Login</h2>
     <form [formGroup]="loginForm" (ngSubmit)="login()">
@@ -56,6 +56,10 @@
           Update Personal Info
         </button>
       </div>
+
+    <button (click)="initFirestore()" class="btn btn--primary">
+        Initialize Firestore Data
+    </button>
       
       <div class="admin-section">
         <h2>Contact Messages</h2>

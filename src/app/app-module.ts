@@ -24,10 +24,16 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
 import { AdminComponent } from './components/admin/admin.component';
 
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { HomeCompoenent } from './components/home/home.compoenent';
+
 @NgModule({
   declarations:
   [
     App,
+    HomeCompoenent,
   ],
   imports: [
     BrowserModule,
@@ -52,7 +58,11 @@ import { AdminComponent } from './components/admin/admin.component';
     AngularFireAuthModule,
     AngularFirestoreModule,
 ],
-  providers: [],
+  providers: [
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore())
+  ],
   bootstrap: [App]
 })
 export class AppModule { }

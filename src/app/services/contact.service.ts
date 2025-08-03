@@ -47,7 +47,7 @@ export class ContactService {
 
       await this.updateRateLimit(clientId);
     } catch (error) {
-      console.error('🔥 Error submitting contact form:', error);
+      console.error('Error submitting contact form:', error);
       throw new Error('Something went wrong while sending your message.');
     }
   }
@@ -80,8 +80,7 @@ export class ContactService {
         throw error;
       }
 
-      console.warn('⚠️ Failed to check rate limit:', error);
-      // Fail open – don't block submission if rate limit check fails
+      console.warn('Failed to check rate limit:', error);
     }
   }
 
@@ -111,7 +110,7 @@ export class ContactService {
         });
       }
     } catch (error) {
-      console.warn('⚠️ Failed to update rate limit:', error);
+      console.warn('Failed to update rate limit:', error);
     }
   }
 

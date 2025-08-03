@@ -32,7 +32,7 @@ export class AuthService {
     return this.user$.pipe(
       map(user => {
         if (!user) return false;
-        return user.email === 'sisodia.kshitijsingh@gmail.com' && user.emailVerified;
+        return user.email === 'sisodia.kshitijsingh@gmail.com';
       })
     );
   }

@@ -1,18 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  CollectionReference,
+  DocumentData
+} from '@angular/fire/firestore';
 import { Observable, from, BehaviorSubject } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 export interface PortfolioData {
-  personal_info: any,
+  personal_info: any;
   skills: any;
-  experience: any[];
-  projects: any[];
-  education: any[];
-  certifications: string[];
-  achievements: string[];
+  experience: { items: any[] };
+  projects: { items: any[] };
+  education: { items: any[] };
+  certifications: { items: string[] };
+  achievements: { items: string[] };
 }
-
 @Injectable({
   providedIn: 'root'
 })
@@ -26,31 +33,31 @@ export class PortfolioService {
   async initializeFirestoreData(): Promise<void> {
     try {
       console.log('Starting Firestore initialization...');
-      
+
       const fallbackData = this.getFallbackData();
-      
+
       // Initialize each collection
       await this.updatePersonalInfo(fallbackData.personal_info);
       console.log('Personal info initialized');
-      
+
       await this.updateSkills(fallbackData.skills);
       console.log('Skills initialized');
-      
-      await this.updateExperience(fallbackData.experience);
+
+      await this.updateExperience(fallbackData.experience.items);
       console.log('Experience initialized');
-      
-      await this.updateProjects(fallbackData.projects);
+
+      await this.updateProjects(fallbackData.projects.items);
       console.log('Projects initialized');
-      
-      await this.updateEducation(fallbackData.education);
+
+      await this.updateEducation(fallbackData.education.items);
       console.log('Education initialized');
-      
-      await this.updateCertifications(fallbackData.certifications);
+
+      await this.updateCertifications(fallbackData.certifications.items);
       console.log('Certifications initialized');
-      
-      await this.updateAchievements(fallbackData.achievements);
+
+      await this.updateAchievements(fallbackData.achievements.items);
       console.log('Achievements initialized');
-      
+
       console.log('Firestore initialization complete!');
     } catch (error) {
       console.error('Error initializing Firestore:', error);
@@ -61,7 +68,7 @@ export class PortfolioService {
 
   private async loadPortfolioData() {
     try {
-      const portfolioCollection = collection(this.firestore, 'portfolio');
+      const portfolioCollection: CollectionReference<DocumentData> = collection(this.firestore, 'portfolio');
       const snapshot = await getDocs(portfolioCollection);
 
       const data: any = {};
@@ -70,8 +77,7 @@ export class PortfolioService {
       });
 
       this.portfolioData$.next(data as PortfolioData);
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error loading portfolio data:', error);
       this.loadFallbackData();
     }
@@ -83,63 +89,64 @@ export class PortfolioService {
     this.portfolioData$.next(fallbackData);
   }
 
-  private getFallbackData(): PortfolioData {
-    return {
-      personal_info: {
-        name: "Kshitij Singh",
-        title: "Associate Software Engineer",
-        tagline: "Building scalable solutions with .NET and cloud technologies",
-        email: "sisodia.kshitijsingh@gmail.com",
-        phone: "+91 9971411395",
-        location: "Hyderabad, Telangana",
-        website: "",
-        linkedin: "https://linkedin.com/in/kshitijsingh9971/",
-        github: "https://github.com/3sterisk",
-        about: "Software engineer with experience in full-stack development using .NET technologies, Angular, and cloud platforms. Skilled in building scalable solutions with both SQL and NoSQL databases, API development, and Azure cloud services. Strong background in automation, data analytics, and cross-functional collaboration."
-      },
-      skills: {
-        frontend: [
-          "Angular",
-          "ReactJS",
-          "JavaScript",
-          "React Native",
-          "Lightning Web Components"
-        ],
-        backend: [
-          "C#",
-          "ASP .NET Core",
-          "ASP .NET MVC",
-          "Entity Framework",
-          "APEX",
-          "Java Servlets",
-          "Python"
-        ],
-        database: [
-          "Azure Cosmos DB",
-          "SQL Server",
-          "MySQL",
-          "Redis",
-          "PL/SQL"
-        ],
-        cloud: [
-          "Azure",
-          "Azure DevOps",
-          "Azure Data Factory",
-          "Azure Synapse Analytics",
-          "Azure CLI",
-          "Docker"
-        ],
-        tools: [
-          "Git",
-          "Visual Studio",
-          "VS Code",
-          "SSMS",
-          "Linux",
-          "Apache Server",
-          "GitHub Copilot"
-        ]
-      },
-      experience: [
+private getFallbackData(): PortfolioData {
+  return {
+    personal_info: {
+      name: "Kshitij Singh",
+      title: "Associate Software Engineer",
+      tagline: "Building scalable solutions with .NET and cloud technologies",
+      email: "sisodia.kshitijsingh@gmail.com",
+      phone: "+91 9971411395",
+      location: "Hyderabad, Telangana",
+      website: "",
+      linkedin: "https://linkedin.com/in/kshitijsingh9971/",
+      github: "https://github.com/3sterisk",
+      about: "Software engineer with experience in full-stack development using .NET technologies, Angular, and cloud platforms. Skilled in building scalable solutions with both SQL and NoSQL databases, API development, and Azure cloud services. Strong background in automation, data analytics, and cross-functional collaboration."
+    },
+    skills: {
+      frontend: [
+        "Angular",
+        "ReactJS", 
+        "JavaScript",
+        "React Native",
+        "Lightning Web Components"
+      ],
+      backend: [
+        "C#",
+        "ASP .NET Core",
+        "ASP .NET MVC", 
+        "Entity Framework",
+        "APEX",
+        "Java Servlets",
+        "Python"
+      ],
+      database: [
+        "Azure Cosmos DB",
+        "SQL Server",
+        "MySQL",
+        "Redis", 
+        "PL/SQL"
+      ],
+      cloud: [
+        "Azure",
+        "Azure DevOps",
+        "Azure Data Factory",
+        "Azure Synapse Analytics",
+        "Azure CLI",
+        "Docker"
+      ],
+      tools: [
+        "Git",
+        "Visual Studio",
+        "VS Code",
+        "SSMS",
+        "Linux",
+        "Apache Server",
+        "GitHub Copilot"
+      ]
+    },
+    experience: {
+      items: [
         {
           company: "Accenture",
           position: "Associate Software Engineer",
@@ -155,7 +162,7 @@ export class PortfolioService {
         },
         {
           company: "Salesforce",
-          position: "Intern",
+          position: "Intern", 
           duration: "April 2022 - June 2022",
           location: "Remote",
           achievements: [
@@ -168,7 +175,7 @@ export class PortfolioService {
         {
           company: "Highradius",
           position: "Intern",
-          duration: "Jan 2022 - April 2022",
+          duration: "Jan 2022 - April 2022", 
           location: "Remote",
           achievements: [
             "Developed a B2B fintech solution with seamless frontend-backend integration",
@@ -177,8 +184,10 @@ export class PortfolioService {
             "Conducted data cleaning to ensure high-quality data for analysis"
           ]
         }
-      ],
-      projects: [
+      ]
+    },
+    projects: {
+      items: [
         {
           name: "React Native Mobile App",
           description: "Cutting-edge mobile app revolutionizing student access to academic help with intuitive interfaces for service requests",
@@ -189,7 +198,7 @@ export class PortfolioService {
           ],
           features: [
             "Student assistance request interface",
-            "Service provider platform",
+            "Service provider platform", 
             "Redux state management",
             "Real-time updates via RESTful APIs",
             "Cross-platform compatibility (Android & iOS)"
@@ -204,7 +213,7 @@ export class PortfolioService {
           technologies: [
             "Python",
             "Pygame",
-            "Machine Learning",
+            "Machine Learning", 
             "RNN",
             "Reinforcement Learning"
           ],
@@ -218,8 +227,10 @@ export class PortfolioService {
           live_demo: "",
           image: "/images/ai-snake-project.jpg"
         }
-      ],
-      education: [
+      ]
+    },
+    education: {
+      items: [
         {
           degree: "Bachelor of Engineering",
           school: "Chandigarh University",
@@ -227,27 +238,31 @@ export class PortfolioService {
           gpa: "",
           relevant_coursework: [
             "Software Engineering",
-            "Data Structures",
+            "Data Structures", 
             "Algorithms",
             "Database Management",
             "Web Development"
           ]
         }
-      ],
-      certifications: [
+      ]
+    },
+    certifications: {
+      items: [
         "Azure Cloud Services",
         ".NET Development",
         "Salesforce Development"
-      ],
-      achievements: [
+      ]
+    },
+    achievements: {
+      items: [
         "Full-stack developer with expertise in .NET technologies",
-        "Experience with both SQL and NoSQL database systems",
+        "Experience with both SQL and NoSQL database systems", 
         "Proficient in cloud technologies and DevOps practices",
         "Strong background in API development and data analytics"
       ]
-    };
-  }
-  
+    }
+  };
+}
 
 
   // async methods for database updation
@@ -255,43 +270,43 @@ export class PortfolioService {
   async updatePersonalInfo(data: any): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'personal_info');
     await setDoc(docRef, data);
-    this.loadPortfolioData();
+    await this.loadPortfolioData();
   }
 
   async updateSkills(data: any): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'skills');
     await setDoc(docRef, data);
-    this.loadPortfolioData();
+    await this.loadPortfolioData();
   }
 
   async updateExperience(data: any[]): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'experience');
-    await setDoc(docRef, data); 
-    this.loadPortfolioData();
+    await setDoc(docRef, { items: data }); 
+    await this.loadPortfolioData();
   }
 
   async updateProjects(data: any[]): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'projects');
-    await setDoc(docRef, data); 
-    this.loadPortfolioData();
+    await setDoc(docRef, { items: data }); 
+    await this.loadPortfolioData();
   }
 
   async updateEducation(data: any[]): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'education');
-    await setDoc(docRef, data);
-    this.loadPortfolioData();
+    await setDoc(docRef, { items: data }); 
+    await this.loadPortfolioData();
   }
 
   async updateCertifications(data: string[]): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'certifications');
-    await setDoc(docRef, data); 
-    this.loadPortfolioData();
+    await setDoc(docRef, { items: data }); 
+    await this.loadPortfolioData();
   }
 
   async updateAchievements(data: string[]): Promise<void> {
     const docRef = doc(this.firestore, 'portfolio', 'achievements');
-    await setDoc(docRef, data); 
-    this.loadPortfolioData();
+    await setDoc(docRef, { items: data }); 
+    await this.loadPortfolioData();
   }
 
 
@@ -310,34 +325,34 @@ export class PortfolioService {
   }
 
   getExperience(): Observable<any[]> {
-    return this.portfolioData$.pipe(
-      map(data => data?.experience || [])
-    );
-  }
+  return this.portfolioData$.pipe(
+    map(data => data?.experience?.items || []) 
+  );
+}
 
-  getProjects(): Observable<any[]> {
-    return this.portfolioData$.pipe(
-      map(data => data?.projects || [])
-    );
-  }
+getProjects(): Observable<any[]> {
+  return this.portfolioData$.pipe(
+    map(data => data?.projects?.items || [])
+  );
+}
 
-  getEducation(): Observable<any[]> {
-    return this.portfolioData$.pipe(
-      map(data => data?.education || [])
-    );
-  }
+getEducation(): Observable<any[]> {
+  return this.portfolioData$.pipe(
+    map(data => data?.education?.items || []) 
+  );
+}
 
-  getCertifications(): Observable<string[]> {
-    return this.portfolioData$.pipe(
-      map(data => data?.certifications || [])
-    );
-  }
+getCertifications(): Observable<string[]> {
+  return this.portfolioData$.pipe(
+    map(data => data?.certifications?.items || []) 
+  );
+}
 
-  getAchievements(): Observable<string[]> {
-    return this.portfolioData$.pipe(
-      map(data => data?.achievements || [])
-    );
-  }
+getAchievements(): Observable<string[]> {
+  return this.portfolioData$.pipe(
+    map(data => data?.achievements?.items || [])
+  );
+}
 
   getPortfolioData(): Observable<PortfolioData | null> {
     return this.portfolioData$.asObservable();
