@@ -281,15 +281,15 @@ export class AdminComponent implements OnInit {
     }
   }
 
-    async initFirestore() {
-    try {
-      await this.portfolioService.initializeFirestoreData();
-      alert('Firestore initialized successfully!');
-    } catch (error) {
-      alert('Error initializing Firestore. Check console.');
-      console.error(error);
-    }
-  }
+  //   async initFirestore() {
+  //   try {
+  //     await this.portfolioService.initializeFirestoreData();
+  //     alert('Firestore initialized successfully!');
+  //   } catch (error) {
+  //     alert('Error initializing Firestore. Check console.');
+  //     console.error(error);
+  //   }
+  // }
 
   private async loadAdminData() {
     // Load portfolio data
