@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Redirecting...</title>
-  <meta http-equiv="refresh" content="0; url=/Portfolio/index.html">
+  <title>Portfolio - Redirecting...</title>
+  <base href="/Portfolio/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>
-    (function () {
-      var l = window.location;
-      var pathname = l.pathname.replace(/^\/Portfolio/, ''); // Remove repo name from path
-      var newUrl = '/Portfolio/index.html?/' + pathname + l.search + l.hash;
-      window.location.replace(newUrl);
-    })();
+    // GitHub Pages SPA redirect
+    // Store the URL the user was trying to access when receiving the 404
+    sessionStorage.redirect = location.href;
   </script>
+  <!-- Immediately redirect to the base URL so we can use the SPA routing -->
+  <meta http-equiv="refresh" content="0;URL='/Portfolio/'">
 </head>
 <body>
-  Redirecting...
+  <!-- IE required at least 512 bytes of data to show non-default 404 -->
+  <div style="padding: 50px; text-align: center; font-family: Arial, sans-serif;">
+    <h1>Redirecting...</h1>
+    <p>If you are not redirected automatically, <a href="/Portfolio/">click here</a>.</p>
+    <div style="margin-top: 20px; font-size: 14px; color: #666;">
+      Loading Portfolio...
+    </div>
+  </div>
 </body>
 </html>
