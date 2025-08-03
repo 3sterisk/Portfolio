@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy:gh": "ng build --configuration production && npx angular-cli-ghpages --dir=dist/angular-portfolio/browser --base-href=/Portfolio/",
+    "deploy:gh": "ng build --configuration production --base-href /Portfolio/ && npx angular-cli-ghpages --dir=dist/angular-portfolio/browser",
     "deploy": "npm run deploy:gh"
   },
   "prettier": {
@@ -40,6 +40,7 @@
     "@angular/cli": "^20.1.3",
     "@angular/compiler-cli": "^20.1.0",
     "@types/jasmine": "~5.1.0",
+    "angular-cli-ghpages": "^2.0.3",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -48,5 +49,4 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.2"
   }
-  
 }
