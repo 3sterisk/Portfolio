@@ -43,7 +43,8 @@
                 "input": "src",
                 "output": "."
               },
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "src/assets/resume/Kshitij_Singh_Resume.pdf"
             ],
             "styles": [
               "src/styles.css"
@@ -118,7 +119,8 @@
                 "input": "public"
               },
               "src/assets",
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "src/assets/resume/Kshitij_Singh_Resume.pdf"
             ],
             "styles": [
               "src/styles.css"
