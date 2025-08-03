@@ -2,51 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Kshitij Singh - Portfolio</title>
-  <base href="/Portfolio">  <!-- ✅ Updated to match your GitHub repo name -->
+  <title>Kshitij's Portfolio</title>
+  <base href="/Portfolio">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Portfolio of Kshitij Singh - Associate Software Engineer specializing in .NET, Angular, and cloud technologies">
-  <meta name="author" content="Kshitij Singh">
-  <meta name="keywords" content="software engineer, .NET developer, Angular, Azure, portfolio">
-  
-  <!-- Open Graph meta tags for better social sharing -->
-  <meta property="og:title" content="Kshitij Singh - Portfolio">
-  <meta property="og:description" content="Associate Software Engineer specializing in .NET and cloud technologies">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://3sterisk.github.io/Portfolio/">
-  
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   
-  <!-- Preload critical resources -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
 <body>
-  <!-- GitHub Pages SPA redirect script -->
-  <script>
-    // Handle redirects from 404.html
-    (function() {
-      var redirect = sessionStorage.redirect;
-      delete sessionStorage.redirect;
-      if (redirect && redirect !== location.href) {
-        // Parse the stored URL and update the current location
-        var url = new URL(redirect);
-        var newPath = url.pathname.replace('/Portfolio', '') || '/';
-        history.replaceState(null, null, newPath + url.search + url.hash);
-      }
-    })();
-  </script>
-  <!-- End GitHub Pages SPA redirect script -->
-  
   <app-root></app-root>
-  
-  <!-- Loading fallback -->
-  <noscript>
-    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-      <h1>JavaScript Required</h1>
-      <p>This application requires JavaScript to run properly.</p>
-    </div>
-  </noscript>
 </body>
 </html>
