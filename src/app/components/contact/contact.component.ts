@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PortfolioService } from '../../services/portfolio.service';
 import { CommonModule } from '@angular/common';
 import { ScrollAnimateDirective } from '../../directives/scroll-animate.directive';
+import { ContactService } from '../../services/contact.service';
 
 @Component({
   selector: 'app-contact',
@@ -17,7 +18,8 @@ export class ContactComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private portfolioService: PortfolioService
+    private portfolioService: PortfolioService,
+    private contactService: ContactService
   ) {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -28,7 +30,9 @@ export class ContactComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.personalInfo = this.portfolioService.getPersonalInfo();
+    this.portfolioService.getPersonalInfo().subscribe(data => {
+      this.personalInfo = data;
+    });
   }
 
   async copyEmail() {
@@ -49,19 +53,19 @@ export class ContactComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    if (this.contactForm.valid) {
+  async onSubmit() {
+    if (this.contactForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
       
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        await this.contactService.submitContactForm(this.contactForm.value);
         this.contactForm.reset();
-        this.isSubmitting = false;
         this.showNotification('Message sent successfully! I\'ll get back to you soon.');
-        console.log('Form submitted:', this.contactForm.value);
-      }, 2000);
-    } else {
-      this.showNotification('Please fill in all fields correctly', 'error');
+      } catch (error: any) {
+        this.showNotification(error.message || 'Error sending message. Please try again.', 'error');
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 

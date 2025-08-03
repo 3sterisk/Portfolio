@@ -14,7 +14,9 @@ export class HeroComponent implements OnInit {
   constructor(private portfolioService: PortfolioService) { }
 
   ngOnInit() {
-    this.personalInfo = this.portfolioService.getPersonalInfo();
+    this.portfolioService.getPersonalInfo().subscribe(data => {
+      this.personalInfo = data;
+    });
   }
 
   downloadResume() {

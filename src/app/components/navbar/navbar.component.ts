@@ -21,16 +21,18 @@ export class NavbarComponent implements OnInit {
 
 
   ngOnInit() {
-     this.personalInfo = this.portfolioService.getPersonalInfo();
+     this.portfolioService.getPersonalInfo().subscribe(data=> {
+      this.personalInfo = data;
+    });
   }
 
   getLogoInitials(): string {
     if (!this.personalInfo?.name) {
-      return 'AJ'; // Fallback if name is not available
+      return 'AJ'; 
     }
     
     const name = this.personalInfo.name.trim();
-    const nameParts = name.split(/\s+/); // Split by any whitespace
+    const nameParts = name.split(/\s+/); 
     
     const validParts = nameParts.filter((part: string) => part.length > 0);
     

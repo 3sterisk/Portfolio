@@ -16,6 +16,14 @@ import { ContactComponent } from './components/contact/contact.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ScrollAnimateDirective } from './directives/scroll-animate.directive';
 
+
+// Firebase imports for NgModule approach
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { environment } from '../environments/environment';
+import { AdminComponent } from './components/admin/admin.component';
+
 @NgModule({
   declarations:
   [
@@ -37,6 +45,12 @@ import { ScrollAnimateDirective } from './directives/scroll-animate.directive';
     ProjectsComponent,
     NavbarComponent,
     ScrollAnimateDirective,
+    AdminComponent,
+
+    //Firebase ports
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
 ],
   providers: [],
   bootstrap: [App]

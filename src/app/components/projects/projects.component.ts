@@ -15,7 +15,9 @@ export class ProjectsComponent implements OnInit {
   constructor(private portfolioService: PortfolioService) {}
 
   ngOnInit() {
-    this.projects = this.portfolioService.getProjects();
+    this.portfolioService.getProjects().subscribe(data=> {
+      this.projects = data;
+    });
   }
 
   openLink(url: string) {
