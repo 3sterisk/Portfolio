@@ -43,6 +43,11 @@
                 "input": "src",
                 "output": "."
               },
+              {
+                "glob": "Kshitij_Singh_Resume.pdf",
+                "input": "src/assets/resume",
+                "output": "assets/resume"
+              },
               "src/favicon.ico",
               "src/assets/resume/Kshitij_Singh_Resume.pdf"
             ],
@@ -118,9 +123,13 @@
                 "glob": "**/*",
                 "input": "public"
               },
+              {
+                "glob": "Kshitij_Singh_Resume.pdf",
+                "input": "src/assets/resume",
+                "output": "assets/resume"
+              },
               "src/assets",
               "src/favicon.ico",
-              "src/assets/resume/Kshitij_Singh_Resume.pdf"
             ],
             "styles": [
               "src/styles.css"
