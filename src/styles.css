@@ -1758,3 +1758,17 @@ html {
 .form-control:valid {
   border-color: var(--color-success);
 }
+
+/* Add this to center the hero image */
+  .hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+    /* Additional centering for the avatar container */
+  .avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
