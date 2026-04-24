@@ -19,18 +19,41 @@ export class HeroComponent implements OnInit {
     });
   }
 
-  downloadResume() {
-    const resumeUrl = '/Portfolio/assets/resume/Kshitij_Singh_Resume.pdf';
-    const resumeFileName = 'Kshitij_Singh_Resume.pdf';
-    const link = document.createElement('a');
-    link.href = resumeUrl;
-    link.download = resumeFileName;
-    link.target = '_blank';
+  async downloadResume() {
+    try {
+      this.showNotification('Preparing resume...');
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    this.showNotification('Resume download started!');
+      // Fetch the detected filename
+      const response = await fetch('assets/resume/resume-info.json');
+      if (!response.ok) throw new Error('Could not fetch resume info');
+
+      const data = await response.json();
+      if (!data.filename) {
+        this.showNotification('No resume uploaded yet.');
+        return;
+      }
+
+      const resumeUrl = `assets/resume/${data.filename}`;
+
+      let userName = 'User';
+      if (this.personalInfo && this.personalInfo.name) {
+        userName = this.personalInfo.name.trim().replace(/\s+/g, '_');
+      }
+      const resumeFileName = `${userName}_Resume.pdf`;
+
+      const link = document.createElement('a');
+      link.href = resumeUrl;
+      link.download = resumeFileName;
+      link.target = '_blank';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      this.showNotification('Resume download started!');
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      this.showNotification('Failed to download resume.');
+    }
   }
 
   private showNotification(message: string) {
@@ -71,3 +94,4 @@ export class HeroComponent implements OnInit {
     }
   }
 }
+

@@ -1,77 +1,514 @@
-<div class="admin-panel" *ngIf="!isAdminUser; else adminDashboard">
-  <div class="login-form">
-    <h2>Admin Login</h2>
+<!-- ===== LOGIN VIEW ===== -->
+<div class="admin-login-wrapper" *ngIf="!isAdminUser">
+  <div class="login-card">
+    <div class="login-card__icon">
+      <i class="fas fa-shield-halved"></i>
+    </div>
+    <h2>Admin Panel</h2>
+    <p class="login-card__subtitle">Sign in to manage your portfolio</p>
+
     <form [formGroup]="loginForm" (ngSubmit)="login()">
       <div class="form-group">
-        <label for="email">Email</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
           class="form-control"
-          required>
+          placeholder="you@example.com"
+          autocomplete="email">
       </div>
-      
+
       <div class="form-group">
         <label for="password">Password</label>
-        <input 
-          type="password" 
-          id="password" 
-          formControlName="password" 
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
           class="form-control"
-          required>
+          placeholder="••••••••"
+          autocomplete="current-password">
       </div>
-      
-      <button 
-        type="submit" 
+
+      <button
+        type="submit"
         class="btn btn--primary"
         [disabled]="loginForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Login</span>
-        <span *ngIf="isLoading">Logging in...</span>
+        <span *ngIf="!isLoading">Sign In</span>
+        <span *ngIf="isLoading" class="flex items-center gap-8">
+          <span class="spinner"></span> Signing in...
+        </span>
       </button>
-      
+
       <div *ngIf="errorMessage" class="error-message">
+        <i class="fas fa-circle-exclamation"></i>
         {{ errorMessage }}
       </div>
     </form>
   </div>
 </div>
 
-<ng-template #adminDashboard>
-  <div class="admin-dashboard">
-    <div class="admin-header">
-      <h1>Portfolio Admin Panel</h1>
-      <button class="btn btn--secondary" (click)="logout()">Logout</button>
-    </div>
-    
-    <div class="admin-sections">
-      <div class="admin-section">
-        <h2>Personal Information</h2>
-        <textarea 
-          [(ngModel)]="personalInfoJson" 
-          class="json-editor"
-          rows="10">
-        </textarea>
-        <button class="btn btn--primary" (click)="updatePersonalInfo()">
-          Update Personal Info
-        </button>
+<!-- ===== DASHBOARD VIEW ===== -->
+<div class="admin-dashboard" *ngIf="isAdminUser">
+
+  <!-- Top Bar -->
+  <div class="admin-topbar">
+    <div class="admin-topbar__left">
+      <div class="admin-topbar__logo">
+        <i class="fas fa-cog"></i>
       </div>
-<!-- 
-    <button (click)="initFirestore()" class="btn btn--primary">
-        Initialize Firestore Data
-    </button> -->
-      
-      <div class="admin-section">
-        <h2>Contact Messages</h2>
-        <div class="messages-list">
-          <div *ngFor="let message of contactMessages" class="message-item">
-            <h4>{{ message.name }} ({{ message.email }})</h4>
-            <p><strong>Subject:</strong> {{ message.subject }}</p>
-            <p><strong>Message:</strong> {{ message.message }}</p>
-            <small>{{ message.timestamp?.toDate() | date:'medium' }}</small>
+      <h1>Portfolio Admin</h1>
+    </div>
+    <div class="admin-topbar__right">
+      <span class="admin-topbar__user">
+        <i class="fas fa-circle" style="color: var(--color-success); font-size: 8px; margin-right: 4px;"></i>
+        Logged in
+      </span>
+      <button class="btn btn--sm btn--danger" (click)="logout()">
+        <i class="fas fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <nav class="admin-tabs">
+    <ul class="admin-tabs__list">
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'personal'"
+          (click)="activeTab = 'personal'">
+        <i class="fas fa-user admin-tabs__icon"></i> Personal
+      </li>
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'skills'"
+          (click)="activeTab = 'skills'">
+        <i class="fas fa-code admin-tabs__icon"></i> Skills
+      </li>
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'experience'"
+          (click)="activeTab = 'experience'">
+        <i class="fas fa-briefcase admin-tabs__icon"></i> Experience
+      </li>
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'projects'"
+          (click)="activeTab = 'projects'">
+        <i class="fas fa-diagram-project admin-tabs__icon"></i> Projects
+      </li>
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'education'"
+          (click)="activeTab = 'education'">
+        <i class="fas fa-graduation-cap admin-tabs__icon"></i> Education
+      </li>
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'extras'"
+          (click)="activeTab = 'extras'">
+        <i class="fas fa-award admin-tabs__icon"></i> Extras
+      </li>
+      <li class="admin-tabs__item"
+          [class.active]="activeTab === 'messages'"
+          (click)="activeTab = 'messages'">
+        <i class="fas fa-envelope admin-tabs__icon"></i> Messages
+        <span class="messages-count" *ngIf="contactMessages.length">{{ contactMessages.length }}</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Content Area -->
+  <div class="admin-content">
+
+    <!-- ===== PERSONAL INFO TAB ===== -->
+    <div *ngIf="activeTab === 'personal'">
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-user section-card__header-icon"></i> Personal Information</h2>
+        </div>
+        <div class="section-card__body" *ngIf="personalInfo">
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label">Full Name</label>
+              <input class="field__input" [(ngModel)]="personalInfo.name" placeholder="Your full name">
+            </div>
+            <div class="field">
+              <label class="field__label">Job Title</label>
+              <input class="field__input" [(ngModel)]="personalInfo.title" placeholder="e.g. Software Engineer">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label">Tagline</label>
+            <input class="field__input" [(ngModel)]="personalInfo.tagline" placeholder="A short description of what you do">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label">Email</label>
+              <input class="field__input" type="email" [(ngModel)]="personalInfo.email" placeholder="you@email.com">
+            </div>
+            <div class="field">
+              <label class="field__label">Phone</label>
+              <input class="field__input" [(ngModel)]="personalInfo.phone" placeholder="+91 XXXXX XXXXX">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label">Location</label>
+              <input class="field__input" [(ngModel)]="personalInfo.location" placeholder="City, State">
+            </div>
+            <div class="field">
+              <label class="field__label">Website</label>
+              <input class="field__input" [(ngModel)]="personalInfo.website" placeholder="https://yoursite.com">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label">LinkedIn URL</label>
+              <input class="field__input" [(ngModel)]="personalInfo.linkedin" placeholder="https://linkedin.com/in/...">
+            </div>
+            <div class="field">
+              <label class="field__label">GitHub URL</label>
+              <input class="field__input" [(ngModel)]="personalInfo.github" placeholder="https://github.com/...">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label">About</label>
+            <textarea class="field__input" [(ngModel)]="personalInfo.about" rows="5" placeholder="Tell visitors about yourself..."></textarea>
+          </div>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="savePersonalInfo()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Changes</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SKILLS TAB ===== -->
+    <div *ngIf="activeTab === 'skills'">
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-code section-card__header-icon"></i> Skills</h2>
+        </div>
+        <div class="section-card__body" *ngIf="skills">
+          <div class="skill-category" *ngFor="let category of skillCategories">
+            <div class="skill-category__label">
+              <i class="fas" [ngClass]="getSkillIcon(category)" class="skill-category__icon"></i>
+              {{ category }}
+            </div>
+            <div class="tag-field__tags">
+              <span class="tag" *ngFor="let skill of skills[category]; let i = index">
+                {{ skill }}
+                <button class="tag__remove" (click)="removeSkill(category, i)" title="Remove">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </span>
+            </div>
+            <div class="tag-field__add">
+              <input
+                [placeholder]="'Add ' + category + ' skill...'"
+                (keydown.enter)="addSkill(category, $event)"
+                #skillInput>
+              <button class="btn--icon-sm" (click)="addSkillFromInput(category, skillInput)" title="Add">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="saveSkills()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Skills</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EXPERIENCE TAB ===== -->
+    <div *ngIf="activeTab === 'experience'">
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-briefcase section-card__header-icon"></i> Experience</h2>
+        </div>
+        <div class="section-card__body">
+          <div class="repeatable-item" *ngFor="let exp of experience; let i = index">
+            <div class="repeatable-item__header">
+              <span class="repeatable-item__number">#{{ i + 1 }}</span>
+              <button class="btn--remove" (click)="removeExperience(i)">
+                <i class="fas fa-trash-can"></i> Remove
+              </button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Company</label>
+                <input class="field__input" [(ngModel)]="exp.company" placeholder="Company name">
+              </div>
+              <div class="field">
+                <label class="field__label">Position</label>
+                <input class="field__input" [(ngModel)]="exp.position" placeholder="Job title">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Duration</label>
+                <input class="field__input" [(ngModel)]="exp.duration" placeholder="e.g. Jan 2024 - Present">
+              </div>
+              <div class="field">
+                <label class="field__label">Location</label>
+                <input class="field__input" [(ngModel)]="exp.location" placeholder="City or Remote">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">Achievements</label>
+              <div class="tag-field__tags">
+                <span class="tag" *ngFor="let ach of exp.achievements; let j = index">
+                  {{ ach | slice:0:60 }}{{ ach.length > 60 ? '...' : '' }}
+                  <button class="tag__remove" (click)="removeAchievement(i, j)"><i class="fas fa-xmark"></i></button>
+                </span>
+              </div>
+              <div class="tag-field__add">
+                <input placeholder="Add an achievement..." (keydown.enter)="addAchievement(i, $event)" #achInput>
+                <button class="btn--icon-sm" (click)="addAchievementFromInput(i, achInput)"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          <button class="btn--add-item" (click)="addExperience()">
+            <i class="fas fa-plus"></i> Add Experience
+          </button>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="saveExperience()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Experience</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PROJECTS TAB ===== -->
+    <div *ngIf="activeTab === 'projects'">
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-diagram-project section-card__header-icon"></i> Projects</h2>
+        </div>
+        <div class="section-card__body">
+          <div class="repeatable-item" *ngFor="let proj of projects; let i = index">
+            <div class="repeatable-item__header">
+              <span class="repeatable-item__number">#{{ i + 1 }} — {{ proj.name || 'New Project' }}</span>
+              <button class="btn--remove" (click)="removeProject(i)">
+                <i class="fas fa-trash-can"></i> Remove
+              </button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Project Name</label>
+                <input class="field__input" [(ngModel)]="proj.name" placeholder="Project name">
+              </div>
+              <div class="field">
+                <label class="field__label">GitHub URL</label>
+                <input class="field__input" [(ngModel)]="proj.github" placeholder="https://github.com/...">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">Description</label>
+              <textarea class="field__input" [(ngModel)]="proj.description" rows="2" placeholder="Brief project description"></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Live Demo URL</label>
+                <input class="field__input" [(ngModel)]="proj.live_demo" placeholder="https://...">
+              </div>
+              <div class="field">
+                <label class="field__label">Image Path</label>
+                <input class="field__input" [(ngModel)]="proj.image" placeholder="/images/project.jpg">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">Technologies</label>
+              <div class="tag-field__tags">
+                <span class="tag" *ngFor="let tech of proj.technologies; let j = index">
+                  {{ tech }}
+                  <button class="tag__remove" (click)="removeProjTag(i, 'technologies', j)"><i class="fas fa-xmark"></i></button>
+                </span>
+              </div>
+              <div class="tag-field__add">
+                <input placeholder="Add technology..." (keydown.enter)="addProjTag(i, 'technologies', $event)" #techInput>
+                <button class="btn--icon-sm" (click)="addProjTagFromInput(i, 'technologies', techInput)"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">Features</label>
+              <div class="tag-field__tags">
+                <span class="tag" *ngFor="let feat of proj.features; let j = index">
+                  {{ feat | slice:0:50 }}{{ feat.length > 50 ? '...' : '' }}
+                  <button class="tag__remove" (click)="removeProjTag(i, 'features', j)"><i class="fas fa-xmark"></i></button>
+                </span>
+              </div>
+              <div class="tag-field__add">
+                <input placeholder="Add feature..." (keydown.enter)="addProjTag(i, 'features', $event)" #featInput>
+                <button class="btn--icon-sm" (click)="addProjTagFromInput(i, 'features', featInput)"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          <button class="btn--add-item" (click)="addProject()">
+            <i class="fas fa-plus"></i> Add Project
+          </button>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="saveProjects()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Projects</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EDUCATION TAB ===== -->
+    <div *ngIf="activeTab === 'education'">
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-graduation-cap section-card__header-icon"></i> Education</h2>
+        </div>
+        <div class="section-card__body">
+          <div class="repeatable-item" *ngFor="let edu of education; let i = index">
+            <div class="repeatable-item__header">
+              <span class="repeatable-item__number">#{{ i + 1 }}</span>
+              <button class="btn--remove" (click)="removeEducation(i)">
+                <i class="fas fa-trash-can"></i> Remove
+              </button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Degree</label>
+                <input class="field__input" [(ngModel)]="edu.degree" placeholder="e.g. Bachelor of Engineering">
+              </div>
+              <div class="field">
+                <label class="field__label">School / University</label>
+                <input class="field__input" [(ngModel)]="edu.school" placeholder="University name">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Duration</label>
+                <input class="field__input" [(ngModel)]="edu.duration" placeholder="e.g. June 2019 - May 2023">
+              </div>
+              <div class="field">
+                <label class="field__label">GPA (optional)</label>
+                <input class="field__input" [(ngModel)]="edu.gpa" placeholder="e.g. 3.8/4.0">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">Relevant Coursework</label>
+              <div class="tag-field__tags">
+                <span class="tag" *ngFor="let course of edu.relevant_coursework; let j = index">
+                  {{ course }}
+                  <button class="tag__remove" (click)="removeCoursework(i, j)"><i class="fas fa-xmark"></i></button>
+                </span>
+              </div>
+              <div class="tag-field__add">
+                <input placeholder="Add course..." (keydown.enter)="addCoursework(i, $event)" #courseInput>
+                <button class="btn--icon-sm" (click)="addCourseworkFromInput(i, courseInput)"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          <button class="btn--add-item" (click)="addEducation()">
+            <i class="fas fa-plus"></i> Add Education
+          </button>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="saveEducation()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Education</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EXTRAS TAB (Certifications + Achievements) ===== -->
+    <div *ngIf="activeTab === 'extras'">
+      <!-- Certifications -->
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-certificate section-card__header-icon"></i> Certifications</h2>
+        </div>
+        <div class="section-card__body">
+          <div class="tag-field__tags">
+            <span class="tag" *ngFor="let cert of certifications; let i = index">
+              {{ cert }}
+              <button class="tag__remove" (click)="certifications.splice(i, 1)"><i class="fas fa-xmark"></i></button>
+            </span>
+          </div>
+          <div class="tag-field__add">
+            <input placeholder="Add certification..." (keydown.enter)="addToList(certifications, $event)" #certInput>
+            <button class="btn--icon-sm" (click)="addToListFromInput(certifications, certInput)"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="saveCertifications()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Certifications</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-trophy section-card__header-icon"></i> Achievements</h2>
+        </div>
+        <div class="section-card__body">
+          <div class="tag-field__tags">
+            <span class="tag" *ngFor="let ach of achievements; let i = index">
+              {{ ach | slice:0:60 }}{{ ach.length > 60 ? '...' : '' }}
+              <button class="tag__remove" (click)="achievements.splice(i, 1)"><i class="fas fa-xmark"></i></button>
+            </span>
+          </div>
+          <div class="tag-field__add">
+            <input placeholder="Add achievement..." (keydown.enter)="addToList(achievements, $event)" #achListInput>
+            <button class="btn--icon-sm" (click)="addToListFromInput(achievements, achListInput)"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+        <div class="section-card__footer">
+          <button class="btn btn--primary" (click)="saveAchievements()" [disabled]="isSaving">
+            <span *ngIf="!isSaving"><i class="fas fa-check"></i> Save Achievements</span>
+            <span *ngIf="isSaving" class="flex items-center gap-8"><span class="spinner"></span> Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MESSAGES TAB ===== -->
+    <div *ngIf="activeTab === 'messages'">
+      <div class="section-card">
+        <div class="section-card__header">
+          <h2><i class="fas fa-envelope section-card__header-icon"></i> Contact Messages</h2>
+          <span class="messages-count" *ngIf="contactMessages.length">{{ contactMessages.length }} messages</span>
+        </div>
+        <div class="section-card__body">
+          <div *ngIf="contactMessages.length === 0" class="messages-empty">
+            <i class="fas fa-inbox"></i>
+            <p>No messages yet</p>
+          </div>
+          <div class="message-card" *ngFor="let msg of contactMessages">
+            <div class="message-card__header">
+              <div>
+                <div class="message-card__sender">{{ msg.name }}</div>
+                <div class="message-card__email">{{ msg.email }}</div>
+              </div>
+              <span class="message-card__time">{{ msg.timestamp?.toDate() | date:'medium' }}</span>
+            </div>
+            <div class="message-card__subject"><i class="fas fa-tag" style="font-size: 11px; margin-right: 4px; opacity: 0.5;"></i> {{ msg.subject }}</div>
+            <div class="message-card__body">{{ msg.message }}</div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
-</ng-template>
+</div>
+
+<!-- Toast Notification -->
+<div *ngIf="toastMessage"
+     class="toast"
+     [class.toast--success]="toastType === 'success'"
+     [class.toast--error]="toastType === 'error'"
+     [class.toast--hiding]="toastHiding">
+  <i [class]="toastType === 'success' ? 'fas fa-circle-check' : 'fas fa-circle-exclamation'"></i>
+  {{ toastMessage }}
+</div>

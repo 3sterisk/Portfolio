@@ -1,115 +1,3 @@
-// import { Component, OnInit, NgZone } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-// import { AuthService } from '../../services/auth.service';
-// import { PortfolioService } from '../../services/portfolio.service';
-// import { Firestore, collection, getDocs } from '@angular/fire/firestore';
-// import { CommonModule } from '@angular/common';
-
-// @Component({
-//   selector: 'app-admin',
-//   templateUrl: './admin.component.html',
-//   styleUrls: ['./admin.component.css'],
-//   imports: [CommonModule, ReactiveFormsModule, FormsModule]
-// })
-// export class AdminComponent implements OnInit {
-//   loginForm: FormGroup;
-//   isLoading = false;
-//   errorMessage = '';
-//   personalInfoJson = '';
-//   contactMessages: any[] = [];
-
-//   constructor(
-//     private fb: FormBuilder,
-//     public authService: AuthService,
-//     private portfolioService: PortfolioService,
-//     private firestore: Firestore,
-//     private ngZone: NgZone
-//   ) {
-//     this.loginForm = this.fb.group({
-//       email: ['', [Validators.required, Validators.email]],
-//       password: ['', [Validators.required, Validators.minLength(6)]]
-//     });
-//   }
-
-//   ngOnInit() {
-//     this.authService.isAdmin().subscribe(isAdmin => {
-//       if (isAdmin) {
-//         this.loadAdminData();
-//       }
-//     });
-//   }
-
-//   async login() {
-//     if (this.loginForm.valid) {
-//       this.isLoading = true;
-//       this.errorMessage = '';
-
-//       try {
-//         await this.authService.signIn(
-//           this.loginForm.value.email,
-//           this.loginForm.value.password
-//         );
-//         this.loadAdminData();
-
-//         this.ngZone.run(() => {
-//           this.loadAdminData();
-//         });
-//       } catch (error: any) {
-//         this.errorMessage = error.message || 'Login failed';
-//       } finally {
-//         this.isLoading = false;
-//       }
-//     }
-//   }
-
-//   async logout() {
-//     await this.authService.signOut();
-//   }
-
-//   private async loadAdminData() {
-//     // Load current personal info
-//     this.portfolioService.getPersonalInfo().subscribe(data => {
-//       this.personalInfoJson = JSON.stringify(data, null, 2);
-//     });
-
-//     // Load contact messages
-//     await this.loadContactMessages();
-//   }
-
-//   private async loadContactMessages() {
-//     try {
-//       const messagesCollection = collection(this.firestore, 'contact-messages');
-//       const snapshot = await getDocs(messagesCollection);
-
-//       this.contactMessages = [];
-//       snapshot.forEach(doc => {
-//         this.contactMessages.push({ id: doc.id, ...doc.data() });
-//       });
-
-//       // Sort by timestamp (newest first)
-//       this.contactMessages.sort((a, b) => 
-//         b.timestamp?.toMillis() - a.timestamp?.toMillis()
-//       );
-//     } catch (error) {
-//       console.error('Error loading contact messages:', error);
-//     }
-//   }
-
-//   async updatePersonalInfo() {
-//     try {
-//       const data = JSON.parse(this.personalInfoJson);
-//       await this.portfolioService.updatePersonalInfo(data);
-//       this.showNotification('Personal info updated successfully!');
-//     } catch (error) {
-//       this.showNotification('Error updating personal info', 'error');
-//     }
-//   }
-
-//   private showNotification(message: string, type: string = 'success') {
-//     console.log(`${type}: ${message}`);
-//   }
-// }
-
 import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -129,22 +17,34 @@ import { take } from 'rxjs';
 export class AdminComponent implements OnInit {
   loginForm: FormGroup;
   isLoading = false;
+  isSaving = false;
   errorMessage = '';
-  personalInfoJson = '';
-  contactMessages: any[] = [];
   isAdminUser = false;
+  activeTab = 'personal';
 
-  // Add missing properties
-  isInitializing = false;
-  initMessage = '';
-  initMessageClass = '';
+  // Toast
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+  toastHiding = false;
+  private toastTimeout: any;
+
+  // Data models
+  personalInfo: any = null;
+  skills: any = null;
+  skillCategories: string[] = ['frontend', 'backend', 'database', 'cloud', 'tools'];
+  experience: any[] = [];
+  projects: any[] = [];
+  education: any[] = [];
+  certifications: string[] = [];
+  achievements: string[] = [];
+  contactMessages: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     public authService: AuthService,
     private portfolioService: PortfolioService,
     private firestore: Firestore,
-    private ngZone: NgZone, // Add NgZone
+    private ngZone: NgZone,
     private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
@@ -153,87 +53,43 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  // ngOnInit() {
-  //   this.authService.isAdmin().subscribe(isAdmin => {
-  //     if (isAdmin) {
-  //       this.ngZone.run(() => {
-  //         this.loadAdminData();
-  //       });
-  //     }
-  //   });
-  // }
-
   ngOnInit() {
-    // Subscribe to admin status and update local property
     this.authService.isAdmin().subscribe(isAdmin => {
-      console.log('🎯 Admin status changed:', isAdmin);
       this.ngZone.run(() => {
-        this.isAdminUser = isAdmin; // Update local property
-        this.cdr.detectChanges(); // Force change detection
-
+        this.isAdminUser = isAdmin;
+        this.cdr.detectChanges();
         if (isAdmin) {
-          this.loadAdminData();
+          this.loadAllData();
         }
       });
     });
   }
 
+  // ===== AUTH =====
 
-  // async login() {
-  //   if (this.loginForm.valid) {
-  //     this.isLoading = true;
-  //     this.errorMessage = '';
-
-  //     try {
-  //       await this.authService.signIn(
-  //         this.loginForm.value.email,
-  //         this.loginForm.value.password
-  //       );
-
-  //       // Use NgZone to ensure proper change detection
-  //       this.ngZone.run(() => {
-  //         this.loadAdminData();
-  //       });
-
-  //     } catch (error: any) {
-  //       this.ngZone.run(() => {
-  //         this.errorMessage = error.message || 'Login failed';
-  //       });
-  //     } finally {
-  //       this.ngZone.run(() => {
-  //         this.isLoading = false;
-  //       });
-  //     }
-  //   }
-  // }
   async login() {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
-      
+
       try {
         await this.authService.signIn(
           this.loginForm.value.email,
           this.loginForm.value.password
         );
-        
-        console.log('✅ Login successful, checking admin status...');
-        
-        // Force check admin status after login
+
         setTimeout(() => {
           this.authService.isAdmin().pipe(take(1)).subscribe(isAdmin => {
-            console.log('🔄 Post-login admin check:', isAdmin);
             this.ngZone.run(() => {
               this.isAdminUser = isAdmin;
               this.cdr.detectChanges();
-              
               if (isAdmin) {
-                this.loadAdminData();
+                this.loadAllData();
               }
             });
           });
         }, 500);
-        
+
       } catch (error: any) {
         this.ngZone.run(() => {
           this.errorMessage = error.message || 'Login failed';
@@ -248,64 +104,91 @@ export class AdminComponent implements OnInit {
 
   async logout() {
     await this.authService.signOut();
+    this.isAdminUser = false;
+    this.personalInfo = null;
+    this.skills = null;
+    this.experience = [];
+    this.projects = [];
+    this.education = [];
+    this.certifications = [];
+    this.achievements = [];
+    this.contactMessages = [];
   }
 
-  // Add the missing Firestore initialization method
-  async initializeFirestore() {
-    this.isInitializing = true;
-    this.initMessage = '';
+  // ===== DATA LOADING =====
 
-    try {
-      await this.portfolioService.initializeFirestoreData();
-      this.ngZone.run(() => {
-        this.initMessage = 'Firestore initialized successfully!';
-        this.initMessageClass = 'success-message';
-      });
-
-      setTimeout(() => {
-        this.ngZone.run(() => {
-          this.loadAdminData();
-        });
-      }, 1000);
-
-    } catch (error) {
-      this.ngZone.run(() => {
-        this.initMessage = 'Error initializing Firestore. Check console for details.';
-        this.initMessageClass = 'error-message';
-      });
-      console.error('Firestore initialization error:', error);
-    } finally {
-      this.ngZone.run(() => {
-        this.isInitializing = false;
-      });
-    }
-  }
-
-  //   async initFirestore() {
-  //   try {
-  //     await this.portfolioService.initializeFirestoreData();
-  //     alert('Firestore initialized successfully!');
-  //   } catch (error) {
-  //     alert('Error initializing Firestore. Check console.');
-  //     console.error(error);
-  //   }
-  // }
-
-  private async loadAdminData() {
-    // Load portfolio data
+  private loadAllData() {
     this.portfolioService.getPersonalInfo().subscribe(data => {
       this.ngZone.run(() => {
-        this.personalInfoJson = JSON.stringify(data, null, 2);
+        this.personalInfo = data ? { ...data } : {};
+        this.cdr.detectChanges();
       });
     });
 
-    // Load contact messages with NgZone
-    await this.loadContactMessages();
+    this.portfolioService.getSkills().subscribe(data => {
+      this.ngZone.run(() => {
+        if (data) {
+          this.skills = {};
+          this.skillCategories.forEach(cat => {
+            this.skills[cat] = data[cat] ? [...data[cat]] : [];
+          });
+        } else {
+          this.skills = { frontend: [], backend: [], database: [], cloud: [], tools: [] };
+        }
+        this.cdr.detectChanges();
+      });
+    });
+
+    this.portfolioService.getExperience().subscribe(data => {
+      this.ngZone.run(() => {
+        this.experience = data ? data.map((item: any) => ({
+          ...item,
+          achievements: item.achievements ? [...item.achievements] : []
+        })) : [];
+        this.cdr.detectChanges();
+      });
+    });
+
+    this.portfolioService.getProjects().subscribe(data => {
+      this.ngZone.run(() => {
+        this.projects = data ? data.map((item: any) => ({
+          ...item,
+          technologies: item.technologies ? [...item.technologies] : [],
+          features: item.features ? [...item.features] : []
+        })) : [];
+        this.cdr.detectChanges();
+      });
+    });
+
+    this.portfolioService.getEducation().subscribe(data => {
+      this.ngZone.run(() => {
+        this.education = data ? data.map((item: any) => ({
+          ...item,
+          relevant_coursework: item.relevant_coursework ? [...item.relevant_coursework] : []
+        })) : [];
+        this.cdr.detectChanges();
+      });
+    });
+
+    this.portfolioService.getCertifications().subscribe(data => {
+      this.ngZone.run(() => {
+        this.certifications = data ? [...data] : [];
+        this.cdr.detectChanges();
+      });
+    });
+
+    this.portfolioService.getAchievements().subscribe(data => {
+      this.ngZone.run(() => {
+        this.achievements = data ? [...data] : [];
+        this.cdr.detectChanges();
+      });
+    });
+
+    this.loadContactMessages();
   }
 
   private async loadContactMessages() {
     try {
-      // Wrap Firebase calls in NgZone
       await this.ngZone.run(async () => {
         const messagesCollection = collection(this.firestore, 'contact-messages');
         const messagesQuery = query(messagesCollection, orderBy('timestamp', 'desc'));
@@ -315,30 +198,289 @@ export class AdminComponent implements OnInit {
         snapshot.forEach(doc => {
           this.contactMessages.push({ id: doc.id, ...doc.data() });
         });
-
-        console.log(`Loaded ${this.contactMessages.length} contact messages`);
+        this.cdr.detectChanges();
       });
     } catch (error) {
       console.error('Error loading contact messages:', error);
-      this.ngZone.run(() => {
-        this.contactMessages = [];
-      });
+      this.contactMessages = [];
     }
   }
 
-  async updatePersonalInfo() {
+  // ===== SAVE OPERATIONS =====
+
+  async savePersonalInfo() {
+    this.isSaving = true;
     try {
-      const data = JSON.parse(this.personalInfoJson);
-      await this.portfolioService.updatePersonalInfo(data);
-      this.showNotification('Personal info updated successfully!');
-    } catch (error) {
-      this.showNotification('Error updating personal info', 'error');
+      await this.portfolioService.updatePersonalInfo(this.personalInfo);
+      this.showToast('Personal info saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save personal info', 'error');
+    } finally {
+      this.isSaving = false;
     }
   }
 
-  private showNotification(message: string, type: string = 'success') {
-    const emoji = type === 'success' ? '✅' : '❌';
-    alert(`${emoji} ${message}`);
+  async saveSkills() {
+    this.isSaving = true;
+    try {
+      await this.portfolioService.updateSkills(this.skills);
+      this.showToast('Skills saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save skills', 'error');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  async saveExperience() {
+    this.isSaving = true;
+    try {
+      await this.portfolioService.updateExperience(this.experience);
+      this.showToast('Experience saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save experience', 'error');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  async saveProjects() {
+    this.isSaving = true;
+    try {
+      await this.portfolioService.updateProjects(this.projects);
+      this.showToast('Projects saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save projects', 'error');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  async saveEducation() {
+    this.isSaving = true;
+    try {
+      await this.portfolioService.updateEducation(this.education);
+      this.showToast('Education saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save education', 'error');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  async saveCertifications() {
+    this.isSaving = true;
+    try {
+      await this.portfolioService.updateCertifications(this.certifications);
+      this.showToast('Certifications saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save certifications', 'error');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  async saveAchievements() {
+    this.isSaving = true;
+    try {
+      await this.portfolioService.updateAchievements(this.achievements);
+      this.showToast('Achievements saved successfully!', 'success');
+    } catch (e) {
+      this.showToast('Failed to save achievements', 'error');
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  // ===== SKILLS HELPERS =====
+
+  addSkill(category: string, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.trim();
+    if (value && this.skills[category]) {
+      this.skills[category].push(value);
+      input.value = '';
+    }
+    event.preventDefault();
+  }
+
+  addSkillFromInput(category: string, input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (value && this.skills[category]) {
+      this.skills[category].push(value);
+      input.value = '';
+    }
+  }
+
+  removeSkill(category: string, index: number) {
+    this.skills[category].splice(index, 1);
+  }
+
+  getSkillIcon(category: string): string {
+    const icons: Record<string, string> = {
+      frontend: 'fa-palette',
+      backend: 'fa-server',
+      database: 'fa-database',
+      cloud: 'fa-cloud',
+      tools: 'fa-wrench'
+    };
+    return icons[category] || 'fa-code';
+  }
+
+  // ===== EXPERIENCE HELPERS =====
+
+  addExperience() {
+    this.experience.push({
+      company: '',
+      position: '',
+      duration: '',
+      location: '',
+      achievements: []
+    });
+  }
+
+  removeExperience(index: number) {
+    this.experience.splice(index, 1);
+  }
+
+  addAchievement(expIndex: number, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.trim();
+    if (value) {
+      this.experience[expIndex].achievements.push(value);
+      input.value = '';
+    }
+    event.preventDefault();
+  }
+
+  addAchievementFromInput(expIndex: number, input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (value) {
+      this.experience[expIndex].achievements.push(value);
+      input.value = '';
+    }
+  }
+
+  removeAchievement(expIndex: number, achIndex: number) {
+    this.experience[expIndex].achievements.splice(achIndex, 1);
+  }
+
+  // ===== PROJECT HELPERS =====
+
+  addProject() {
+    this.projects.push({
+      name: '',
+      description: '',
+      technologies: [],
+      features: [],
+      github: '',
+      live_demo: '',
+      image: ''
+    });
+  }
+
+  removeProject(index: number) {
+    this.projects.splice(index, 1);
+  }
+
+  addProjTag(projIndex: number, field: string, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.trim();
+    if (value) {
+      this.projects[projIndex][field].push(value);
+      input.value = '';
+    }
+    event.preventDefault();
+  }
+
+  addProjTagFromInput(projIndex: number, field: string, input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (value) {
+      this.projects[projIndex][field].push(value);
+      input.value = '';
+    }
+  }
+
+  removeProjTag(projIndex: number, field: string, tagIndex: number) {
+    this.projects[projIndex][field].splice(tagIndex, 1);
+  }
+
+  // ===== EDUCATION HELPERS =====
+
+  addEducation() {
+    this.education.push({
+      degree: '',
+      school: '',
+      duration: '',
+      gpa: '',
+      relevant_coursework: []
+    });
+  }
+
+  removeEducation(index: number) {
+    this.education.splice(index, 1);
+  }
+
+  addCoursework(eduIndex: number, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.trim();
+    if (value) {
+      this.education[eduIndex].relevant_coursework.push(value);
+      input.value = '';
+    }
+    event.preventDefault();
+  }
+
+  addCourseworkFromInput(eduIndex: number, input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (value) {
+      this.education[eduIndex].relevant_coursework.push(value);
+      input.value = '';
+    }
+  }
+
+  removeCoursework(eduIndex: number, courseIndex: number) {
+    this.education[eduIndex].relevant_coursework.splice(courseIndex, 1);
+  }
+
+  // ===== GENERIC LIST HELPERS (Certifications / Achievements) =====
+
+  addToList(list: string[], event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.trim();
+    if (value) {
+      list.push(value);
+      input.value = '';
+    }
+    event.preventDefault();
+  }
+
+  addToListFromInput(list: string[], input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (value) {
+      list.push(value);
+      input.value = '';
+    }
+  }
+
+  // ===== TOAST =====
+
+  private showToast(message: string, type: 'success' | 'error') {
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
+    this.toastMessage = message;
+    this.toastType = type;
+    this.toastHiding = false;
+
+    this.toastTimeout = setTimeout(() => {
+      this.toastHiding = true;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.toastMessage = '';
+        this.toastHiding = false;
+        this.cdr.detectChanges();
+      }, 300);
+    }, 3000);
   }
 }
-

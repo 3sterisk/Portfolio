@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { FaviconService } from './services/favicon.service';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,8 @@ import { Component, signal } from '@angular/core';
 })
 export class App {
   protected readonly title = signal('angular-portfolio');
+
+  constructor(private faviconService: FaviconService) {
+    this.faviconService.init();
+  }
 }

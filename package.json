@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/find-resume.js",
     "start": "ng serve",
+    "prebuild": "node scripts/find-resume.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "predeploy:gh": "node scripts/find-resume.js",
     "deploy:gh": "ng build --configuration production --base-href /Portfolio/ && npx angular-cli-ghpages --dir=dist/angular-portfolio/browser",
     "deploy": "npm run deploy:gh"
   },

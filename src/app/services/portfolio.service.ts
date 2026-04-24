@@ -93,7 +93,7 @@ private getFallbackData(): PortfolioData {
   return {
     personal_info: {
       name: "Kshitij Singh",
-      title: "Associate Software Engineer",
+      title: "Analyst Software Engineer",
       tagline: "Building scalable solutions with .NET and cloud technologies",
       email: "sisodia.kshitijsingh@gmail.com",
       phone: "+91 9971411395",
@@ -101,7 +101,7 @@ private getFallbackData(): PortfolioData {
       website: "",
       linkedin: "https://linkedin.com/in/kshitijsingh9971/",
       github: "https://github.com/3sterisk",
-      about: "Software engineer with experience in full-stack development using .NET technologies, Angular, and cloud platforms. Skilled in building scalable solutions with both SQL and NoSQL databases, API development, and Azure cloud services. Strong background in automation, data analytics, and cross-functional collaboration."
+      about: "I am a Software Engineer with over 2 years of experience building, modernizing, and optimizing enterprise applications. Specializing in .NET, Angular, and Microsoft Azure, I thrive on bridging the gap between scalable backend architectures and seamless frontend experiences. At Accenture, I've led critical migrations—like upgrading legacy apps to Angular 19+ and migrating cloud services to .NET 8—driving massive performance improvements and reducing response times by up to 50%. Whether I'm designing CI/CD pipelines, refactoring complex SQL queries, or orchestrating cloud deployments, my goal is always to deliver robust, high-performance software that creates real business impact."
     },
     skills: {
       frontend: [
@@ -149,15 +149,27 @@ private getFallbackData(): PortfolioData {
       items: [
         {
           company: "Accenture",
-          position: "Associate Software Engineer",
-          duration: "Feb 2024 - Present",
+          position: "Analyst Software Engineer",
+          duration: "Dec 2025 - Present",
           location: "Hyderabad, Telangana",
           achievements: [
-            "Developed features for both frontend and backend using .NET technologies with Angular and C#",
-            "Built and integrated APIs leveraging Azure Data Factory and Azure Synapse Analytics for data pipelines",
-            "Utilized Azure DevOps for CI/CD pipelines and automated deployment processes",
-            "Developed APIs and managed caching using Redis to optimize performance and reduce latency",
-            "Collaborated with cross-functional teams maintaining consistent data flow across multiple services"
+            "Led migration of enterprise frontend application from Angular 10 to Angular 19+, improving maintainability, performance, and long-term support readiness.",
+            "Migrated Azure Functions and backend services to .NET 8, improving execution speed by 30% and enhancing scalability.",
+            "Implemented .NET code performance fixes and optimization changes, reducing response times and improving production stability.",
+            "Managed Azure deployment activities, release coordination, and production hotfixes under strict SLAs with minimal downtime.",
+            "Optimized SQL stored procedures via query refactoring and indexing, reducing processing time by 50%."
+          ]
+        },
+        {
+          company: "Accenture",
+          position: "Associate Software Engineer",
+          duration: "Feb 2024 - Nov 2025",
+          location: "Hyderabad, Telangana",
+          achievements: [
+            "Developed backend and frontend features using C Sharp, ASP.NET Core, Angular, and REST APIs.",
+            "Worked with SQL Server, Azure Cosmos DB, Redis, and integrated Azure Data Factory and Synapse pipelines.",
+            "Implemented CI/CD pipelines using Azure DevOps for automated build and deployment.",
+            "Provided production support, issue resolution, and enhancement delivery in Agile development environment."
           ]
         },
         {
